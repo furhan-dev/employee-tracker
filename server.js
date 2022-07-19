@@ -183,7 +183,6 @@ function addRole() {
         ])
         .then(async answer => {
             const params = [answer.title, answer.salary, await getDeptId(answer.dept)];
-            console.log(params);
             const sql = `INSERT INTO roles (title, salary, department_id)
                     VALUES (?, ?, ?)`;
             db.query(sql, params, (err, result) => {
@@ -230,6 +229,34 @@ function addEmployee() {
                 if (err || !result) throw err;
 
                 console.log(`\nSuccessfully added ${answer.first_name} ${answer.last_name}!`);
+                displayEmployees();
+            });
+        });
+}
+
+function updateEmployeeRole() {
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: "Select the employee to modify: ",
+                choices: getEmployeeList
+            },
+            {
+                type: 'list',
+                name: 'role',
+                message: "Select the employee's new role: ",
+                choices: getRoleList
+            },
+        ])
+        .then(async answer => {
+            const sql = `UPDATE employees SET employees.role_id = ${await getRoleId(answer.role)}
+                        WHERE employees.id =  ${await getEmployeeId(answer.employee)}`;
+            db.query(sql, (err, result) => {
+                if (err || !result) throw err;
+
+                console.log(`\nSuccessfully updated ${answer.first_name} ${answer.last_name}!`);
                 displayEmployees();
             });
         });
@@ -283,6 +310,16 @@ function getRoleId(title) {
 
 function getManagerList() {
     const sql = "SELECT first_name, last_name FROM employees WHERE role_id=1";
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, rows) => {
+            if (err) reject(err);
+            resolve(rows.map(row => row.first_name + " " + row.last_name));
+        });
+    });
+}
+
+function getEmployeeList() {
+    const sql = "SELECT first_name, last_name FROM employees";
     return new Promise((resolve, reject) => {
         db.query(sql, (err, rows) => {
             if (err) reject(err);
