@@ -66,11 +66,26 @@ function promptUser() {
 };
 
 function displayDepartments() {
-    const query = "SELECT id as id, name as department FROM departments";
+    const query = "SELECT id, name as department FROM departments";
     db.query(query, (err, rows) => {
         if (err) throw err;
 
         console.log("\nDepartments");
+        console.table(rows);
+        promptUser();
+    });
+}
+
+function displayRoles() {
+    const query =
+        `SELECT roles.id, roles.title, departments.name AS department
+        FROM roles
+        INNER JOIN departments ON roles.department_id = departments.id`;
+
+    db.query(query, (err, rows) => {
+        if (err) throw err;
+
+        console.log("\nRoles");
         console.table(rows);
         promptUser();
     });
