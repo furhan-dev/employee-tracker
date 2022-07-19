@@ -21,7 +21,7 @@ function promptUser() {
         {
             type: 'list',
             name: 'choices',
-            message: 'Please select an option?',
+            message: 'Please select an option',
             choices: ['View all departments',
                 'View all roles',
                 'View all employees',
