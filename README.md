@@ -6,7 +6,7 @@
 
 A simple employee tracking Node CLI app using Inquirer and MySQL.
 
-A walkthrough demo can be found [here](https://drive.google.com/file/d/1bO23ipo907CvzWbGw0obaRPJLUPV5n2r/view)
+A walkthrough demo can be found [here](https://drive.google.com/file/d/1w6J5kmzYBd4OxOKVq9VOAD8oD49YdhFk/view)
 
 ## Table of Contents
 
