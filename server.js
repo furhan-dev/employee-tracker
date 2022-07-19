@@ -66,27 +66,51 @@ function promptUser() {
 };
 
 function displayDepartments() {
-    const query = "SELECT id, name as department FROM departments";
-    db.query(query, (err, rows) => {
+    const sql = "SELECT id, name as department FROM departments";
+    db.query(sql, (err, rows) => {
         if (err) throw err;
 
-        console.log("\nDepartments");
+        console.log("\n\nDepartments");
         console.table(rows);
         promptUser();
     });
 }
 
 function displayRoles() {
-    const query =
+    const sql =
         `SELECT roles.id, roles.title, departments.name AS department
         FROM roles
         INNER JOIN departments ON roles.department_id = departments.id`;
 
-    db.query(query, (err, rows) => {
+    db.query(sql, (err, rows) => {
         if (err) throw err;
 
-        console.log("\nRoles");
+        console.log("\n\nRoles");
         console.table(rows);
         promptUser();
     });
+}
+
+function displayEmployees() {
+    const sql =
+        `SELECT employees.id, 
+                employees.first_name,
+                employees.last_name,
+                departments.name AS department,
+                roles.title,
+                roles.salary,
+                CONCAT (manager.first_name, " ", manager.last_name) AS manager 
+        FROM employees
+            LEFT JOIN roles ON employees.role_id = roles.id
+            LEFT JOIN departments ON roles.department_id = departments.id
+            LEFT JOIN employees manager ON employees.manager_id = manager.id`;
+
+    db.query(sql, (err, rows) => {
+        if (err) throw err;
+
+        console.log("\n\nEmployees");
+        console.table(rows);
+        promptUser();
+    });
+
 }
