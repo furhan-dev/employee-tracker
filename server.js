@@ -112,5 +112,33 @@ function displayEmployees() {
         console.table(rows);
         promptUser();
     });
+}
 
+function addDepartment() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'deptName',
+            message: "Enter new department name: ",
+            validate: deptName => {
+                if (!deptName) {
+                    // TODO: check against existing depts
+                    console.log('Please enter a valid department name');
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+    ])
+        .then(answer => {
+            const sql = `INSERT INTO departments (name)
+                      VALUES ('${answer.deptName}')`;
+            db.query(sql, (err, result) => {
+                if (err || !result) throw err;
+
+                console.log(`\nSuccessfully added ${answer.deptName}!`);
+                displayDepartments();
+            });
+        });
 }
