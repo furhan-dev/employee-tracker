@@ -1,8 +1,7 @@
-const inquirer = require('inquirer');
-const mysql = require('mysql2');
-const table = require('console.table');
+import inquirer from 'inquirer';
+import mysql from 'mysql2';
 
-mysql.createConnection(
+const db = mysql.createConnection(
     {
         host: '127.0.0.1',
         user: 'root',
@@ -12,9 +11,8 @@ mysql.createConnection(
     console.log("Connected to the employee_db database")
 );
 
-connection.connect(err => {
+db.connect(err => {
     if (err) throw err;
-    console.log('connected as id ' + connection.threadId);
     promptUser()
 });
 
@@ -59,9 +57,21 @@ function promptUser() {
                 case "Update employee role":
                     updateEmployeeRole();
                     break;
-                case "Update employee role":
-                    connection.end()
+                case "Quit":
+                    console.log("Goodbye!");
+                    db.end()
                     break;
             }
         });
 };
+
+function displayDepartments() {
+    const query = "SELECT id as id, name as department FROM departments";
+    db.query(query, (err, rows) => {
+        if (err) throw err;
+
+        console.log("\nDepartments");
+        console.table(rows);
+        promptUser();
+    });
+}
