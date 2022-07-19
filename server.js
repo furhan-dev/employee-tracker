@@ -118,10 +118,10 @@ function addDepartment() {
     inquirer.prompt([
         {
             type: 'input',
-            name: 'deptName',
+            name: 'dept',
             message: "Enter new department name: ",
-            validate: deptName => {
-                if (!deptName) {
+            validate: dept => {
+                if (!dept) {
                     // TODO: check against existing depts
                     console.log('Please enter a valid department name');
                     return false;
@@ -133,12 +133,85 @@ function addDepartment() {
     ])
         .then(answer => {
             const sql = `INSERT INTO departments (name)
-                      VALUES ('${answer.deptName}')`;
+                      VALUES ('${answer.dept}')`;
             db.query(sql, (err, result) => {
                 if (err || !result) throw err;
 
-                console.log(`\nSuccessfully added ${answer.deptName}!`);
+                console.log(`\nSuccessfully added ${answer.dept}!`);
                 displayDepartments();
             });
         });
+}
+
+function addRole() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: "Enter new role name: ",
+            validate: title => {
+                if (!title) {
+                    // TODO: check against existing roles
+                    console.log('Please enter a valid role name');
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: "Enter the salary for the new role: ",
+            validate: salary => {
+                if (!salary || isNaN(salary)) {
+                    console.log('Please enter a valid salary');
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        },
+        {
+            type: 'list',
+            name: 'dept',
+            message: "Which department does this role belong to?: ",
+            choices: getDeptList
+        }
+    ])
+        .then(async answer => {
+            const params = [answer.title, answer.salary, await getDeptId(answer.dept)]
+            console.log(params);
+            const sql = `INSERT INTO roles (title, salary, department_id)
+                      VALUES (?, ?, ?)`;
+            db.query(sql, params, (err, result) => {
+                if (err || !result) throw err;
+
+                console.log(`\nSuccessfully added ${answer.title}!`);
+                displayRoles();
+            });
+        });
+}
+
+function getDeptList() {
+    const sql = "SELECT departments.name as department FROM departments";
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, rows) => {
+            if (err) reject(err);
+            resolve(rows.map(row => row.department));
+        });
+    });
+}
+
+function getDeptId(name) {
+    const sql = `SELECT id
+                FROM departments
+                WHERE departments.name = '${name}'`;
+    return new Promise((resolve, reject) => {
+        db.query(sql, (err, rows) => {
+            if (err || !rows) reject(err);
+            console.log(rows[0].id);
+            resolve(rows[0].id);
+        });
+    });
 }
